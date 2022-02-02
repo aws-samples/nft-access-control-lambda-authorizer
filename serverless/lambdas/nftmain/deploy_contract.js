@@ -19,8 +19,8 @@ const deployContract = async (tokenName,tokenTicker, s3URI) => {
 
     //create an instance of the contract
 
-    const abi = require('./NFTSamples/build/NFT_BaseURI.json').abi;
-    const bytecode = require('./NFTSamples/build/NFT_BaseURI.json').bytecode;
+    const abi = require('./NFTSamples/NFT_BaseURI.json').abi;
+    const bytecode = require('./NFTSamples/NFT_BaseURI.json').bytecode;
 
     //deploy smart contract
     console.log(tokenName, tokenTicker, s3URI)

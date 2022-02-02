@@ -1,7 +1,7 @@
 const AWS = require('aws-sdk');
 const deployContract = require('./deploy_contract');
 const mintNFT = require('./mint_nft');
-const getOwner = require('./get_owner');
+const getDetails = require('./get_details');
 const region = process.env.AWS_DEFAULT_REGION;
 const bucketName = process.env.bucketName;
 const s3 = new AWS.S3({apiVersion: '2006-03-01'});
@@ -16,36 +16,43 @@ try {
   switch(requestType.toLowerCase()) {
       case 'deploy': 
  {
-         let {requestType,tokenName, tokenTicker, metadataFilename, metadata} = JSON.parse(event.body);
-
-         const fileParams = {
-            Bucket: bucketName,
-            ACL: 'public-read',
-            Key: metadataFilename,
-            Body: JSON.stringify(metadata)
-           };
-        //store the metadata file for the NFT in an S3 bucket
-
-        await s3.putObject(fileParams).promise();
-        const s3URI  = `https://${bucketName}.s3.${region}.amazonaws.com/${metadataFilename}`;
-        responseObject = await deployContract.deployContract(tokenName, tokenTicker, s3URI);
+         let { tokenName, tokenTicker, baseURI} = JSON.parse(event.body);
+          
+        responseObject = await deployContract.deployContract(tokenName, tokenTicker, baseURI);
         break;
  }
 
       case 'mint': 
-{        
-          let {contractAddress, mintAddress} = JSON.parse(event.body);
+      {        
+          let {contractAddress, mintAddress, gasLimit, gasPrice, metadata} = JSON.parse(event.body);
+          const tokenId = await getDetails.getTokenId(contractAddress)
+          
+          const fileParams = {  
+            Bucket: bucketName,
+            // ACL: 'public-read',
+            Key: `${tokenId}.json`,
+            Body: JSON.stringify(metadata.item)
+          };
+
+          //
+          //store the metadata file for the NFT in an S3 bucket
+          await s3.putObject(fileParams).promise();
+
           //call the mint NFT function
-          responseObject = await mintNFT.mintNFT(contractAddress, mintAddress)
+          responseObject = await mintNFT.mintNFT(contractAddress, mintAddress, gasLimit, gasPrice)
          break;
-}
-      case 'getowner':
-{
+      }
+      case 'details':
+      {
           let  {contractAddress, tokenID} = JSON.parse(event.body);
           //call the get owner function
-          responseObject = await getOwner.getOwner(contractAddress, tokenID)
+          responseObject = await getDetails.getTokenDetails(contractAddress, tokenID)
+          // responseObject = {
+          //   owner,
+          //   uri: `${uri}.json`
+          // } 
           break;
-}
+      }
       default:
           responseObject = 'Invalid requestType or parameters';
           break;

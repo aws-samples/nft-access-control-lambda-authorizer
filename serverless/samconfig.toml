@@ -1,0 +1,12 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "nft-app"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-lq3jwydq2bna"
+s3_prefix = "nft-app"
+region = "us-east-1"
+confirm_changeset = false
+capabilities = "CAPABILITY_NAMED_IAM"
+parameter_overrides = "pEmail=\"matanzu@amazon.com\" pSubnetId=\"subnet-054125eff3faa77e6\" pNftBucketName=\"matanzu-nfts\" pConfirmationBlocks=\"10\" pClusterName=\"nft-ecs\" pContainerName=\"rinkeby\" pRepositoryName=\"nftrepository\" pIpRangeWhitelist=\"0.0.0.0/0\" pNetworkId=\"n-ethereum-rinkeby\" pInstanceType=\"bc.t3.large\" pAvailabilityZone=\"us-east-1a\""
+image_repositories = []

@@ -1,11 +1,10 @@
 {
 "requestType": "deploy",
-"tokenName": "coolnft",
-"tokenTicker": "SYMB",
-"metadataFilename": "metadata.json",
-"metadata":{
-       "description": "useful descriptiom", 
-       "image": "<url of the image, eg. an IPFS URL hash>", 
-       "name": " My cool nft"
-      }
+"tokenName": "mzawsnft",
+"tokenTicker": "MZAN",
+"baseURI": "https://d3i60wwbxl0tk7.cloudfront.net/metadata/"
 }
+
+
+
+
