@@ -1,0 +1,11 @@
+{
+  "name": "nft-amb-contracts",
+  "version": "1.0.0",
+  "private": true,
+  "authors": [
+    "Matan Zutta"
+  ],
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.4.2"
+  }
+}
