@@ -2,10 +2,13 @@ const AWS = require('aws-sdk');
 const deployContract = require('./deploy_contract');
 const mintNFT = require('./mint_nft');
 const getDetails = require('./get_details');
-const region = process.env.AWS_DEFAULT_REGION;
+const uuid = require('uuid')
+import { v4 as uuidv4 } from 'uuid';
+// const region = process.env.AWS_DEFAULT_REGION;
 const bucketName = process.env.bucketName;
 const s3 = new AWS.S3({apiVersion: '2006-03-01'});
 
+const METADATA_PREFIX = "metadata"
 // Handler
 exports.handler = async function(event, context) {
   let responseObject = null;
@@ -16,8 +19,7 @@ try {
   switch(requestType.toLowerCase()) {
       case 'deploy': 
  {
-         let { tokenName, tokenTicker, baseURI} = JSON.parse(event.body);
-          
+        let { tokenName, tokenTicker, baseURI} = JSON.parse(event.body);
         responseObject = await deployContract.deployContract(tokenName, tokenTicker, baseURI);
         break;
  }
@@ -25,21 +27,28 @@ try {
       case 'mint': 
       {        
           let {contractAddress, mintAddress, gasLimit, gasPrice, metadata} = JSON.parse(event.body);
-          const tokenId = await getDetails.getTokenId(contractAddress)
+          const metadataId = uuidv4(); // can alternativeley use await getDetails.getTokenId(contractAddress)
+          // const fullMetadataUri = `${baseURI}${METADATA_PREFIX}/${metadataId}.json`;
           
           const fileParams = {  
             Bucket: bucketName,
             // ACL: 'public-read',
-            Key: `${tokenId}.json`,
-            Body: JSON.stringify(metadata.item)
+            Key: `${METADATA_PREFIX}/${metadataId}.json`,
+            Body: JSON.stringify(metadata)
           };
 
           //
           //store the metadata file for the NFT in an S3 bucket
           await s3.putObject(fileParams).promise();
-
+          const mintParams = {
+            contractAddress, 
+            mintAddress, 
+            metadataUrl = `${metadataId}.json`,
+            gasLimit, 
+            gasPrice
+          }
           //call the mint NFT function
-          responseObject = await mintNFT.mintNFT(contractAddress, mintAddress, gasLimit, gasPrice)
+          responseObject = await mintNFT.mintNFT(...mintParams)
          break;
       }
       case 'details':

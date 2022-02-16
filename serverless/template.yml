@@ -146,6 +146,7 @@ Resources:
             RestApiId: !Ref nftapi
             Path: /
             Method: POST
+  
   ecrRepository:
     Type: AWS::ECR::Repository
     Properties:

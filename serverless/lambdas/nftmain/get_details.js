@@ -17,7 +17,7 @@ const getTokenId = async (contractAddress) => {
   const  myWallet = new ethers.Wallet(pvtKey, provider);
 
   //create an instance of the contract
-  const abi = require('../../contracts/NFTSamples/build/NFT_BaseURI.json').abi;
+  const abi = require('./NFTSamples/NFT_BaseURI.json').abi;
 
   //attaching to a deployed contract and interacting with your contract
   const erc721 = new ethers.Contract(contractAddress, abi, myWallet);

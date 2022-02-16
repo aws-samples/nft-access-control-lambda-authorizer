@@ -1,14 +1,12 @@
-{"requestType": "mint",
-"contractAddress": "0x639e1cB88dF917216eca7fe7E6d13546fa05aB19",
-"mintAddress": "0xA4087a030417f6c29B3d465360fB8615ae517d36",
-"gasLimit": 9000000,
-"gasPrice": 10000000000,
-"metadata": {
-    "prefix": "mz-metadata",
-    "item": {
-      "description": "useful descriptiom", 
-      "image": "https://d3i60wwbxl0tk7.cloudfront.net/download.jpeg", 
-      "name": " My cool nft"
-    }
-}
+{
+  "requestType": "mint",
+  "contractAddress": "0x49d4336D5b7BE699eCF7f06cC9E277D4D30E384c",
+  "mintAddress": "0xA4087a030417f6c29B3d465360fB8615ae517d36",
+  "gasLimit": 9000000,
+  "gasPrice": 10000000000,
+  "metadata": {
+    "description": "useful descriptiom", 
+    "image": "https://d3i60wwbxl0tk7.cloudfront.net/download.jpeg", 
+    "name": " My cool nft"
+  }
 }

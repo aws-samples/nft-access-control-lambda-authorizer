@@ -5,7 +5,7 @@ const ethers = require('ethers');
 const nodeId = process.env.nodeId;
 const networkId = process.env.networkId;
 
-const mintNFT = async (contractAddress, mintAddress, gasLimit = 100000, gasPrice = 100000000000) => {
+const mintNFT = async (contractAddress, mintAddress, metadataUrl, gasLimit = 100000, gasPrice = 100000000000) => {
     let endpoint = await utils.getHTTPendpoint(nodeId,networkId)
     endpoint = `https://${endpoint}`
     const baseProvider = new AWSHttpProvider(endpoint);
@@ -24,7 +24,7 @@ const mintNFT = async (contractAddress, mintAddress, gasLimit = 100000, gasPrice
     const erc721 = new ethers.Contract(contractAddress, abi, myWallet)
     try {
       var options = { gasPrice, gasLimit };
-      const mint  = await erc721.safeMint(mintAddress, options)
+      const mint  = await erc721.safeMint(mintAddress, metadataUrl, options)
     return {"Mint Tx Hash": mint.hash};
       } catch (error) {
      return {"Minting Error": error};

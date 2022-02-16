@@ -21,7 +21,8 @@ const getHTTPendpoint = async (nodeId, networkId) => {
       };
       const retrievedNode = await amb.getNode(param).promise();
       return retrievedNode.Node.FrameworkAttributes.Ethereum.HttpEndpoint
-} 
+}
+
 module.exports = {
   getSSMParam,
   getHTTPendpoint
