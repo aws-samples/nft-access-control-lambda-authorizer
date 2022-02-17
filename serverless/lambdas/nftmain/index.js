@@ -3,10 +3,11 @@ const deployContract = require('./deploy_contract');
 const mintNFT = require('./mint_nft');
 const getDetails = require('./get_details');
 const uuid = require('uuid')
-import { v4 as uuidv4 } from 'uuid';
+// import { v4 as uuidv4 } from 'uuid';
 // const region = process.env.AWS_DEFAULT_REGION;
 const bucketName = process.env.bucketName;
 const s3 = new AWS.S3({apiVersion: '2006-03-01'});
+
 
 const METADATA_PREFIX = "metadata"
 // Handler
@@ -27,7 +28,7 @@ try {
       case 'mint': 
       {        
           let {contractAddress, mintAddress, gasLimit, gasPrice, metadata} = JSON.parse(event.body);
-          const metadataId = uuidv4(); // can alternativeley use await getDetails.getTokenId(contractAddress)
+          const metadataId = uuid.uuidv4(); // can alternativeley use await getDetails.getTokenId(contractAddress)
           // const fullMetadataUri = `${baseURI}${METADATA_PREFIX}/${metadataId}.json`;
           
           const fileParams = {  
