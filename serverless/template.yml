@@ -114,6 +114,9 @@ Resources:
         ResourcePolicy:
           IpRangeWhitelist: 
             - !Ref pIpRangeWhitelist
+        Authorizers:  
+          MyLambdaTokenAuth:
+            FunctionArn: !GetAtt nftauth.Arn
   nftmain:
     Type: AWS::Serverless::Function
     Properties:
@@ -146,7 +149,33 @@ Resources:
             RestApiId: !Ref nftapi
             Path: /
             Method: POST
-  
+  nftauth:
+    Type: AWS::Serverless::Function
+    Properties:
+      Environment:
+        Variables:
+          nodeId: !GetAtt EthereumNode.NodeId
+          networkId: !GetAtt EthereumNode.NetworkId
+          bucketName: !Ref nfMetadataBucket
+          pvtkey: "ethSystemKey"
+      Handler: index.handler
+      Runtime: nodejs14.x
+      CodeUri: lambdas/nftauth/.
+      Description: LambdaAuthorizer 
+      Timeout: 10
+      # Function's execution role
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AWSLambda_ReadOnlyAccess
+        - AmazonManagedBlockchainFullAccess 
+        - AmazonSSMReadOnlyAccess
+      Events:
+        postEndpoint:
+          Type: Api
+          Properties:
+            RestApiId: !Ref nftapi
+            Path: /assets/{proxy+}
+            Method: GET
   ecrRepository:
     Type: AWS::ECR::Repository
     Properties:
@@ -214,6 +243,7 @@ Resources:
         - 'arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy'
         - 'arn:aws:iam::aws:policy/AmazonManagedBlockchainFullAccess'
         - 'arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess'
+  
 Outputs:
   invokeFargateTaskName:
     Value: !Ref invokeFargateTask
