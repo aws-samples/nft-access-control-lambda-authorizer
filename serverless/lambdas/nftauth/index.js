@@ -1,12 +1,12 @@
 const AWS = require('aws-sdk');
-const { ethers } = require('ethers');
+const { ethers, providers } = require('ethers');
 const { getHTTPendpoint, getSSMParam } = require('./utils')
 const AWSHttpProvider = require('./aws-web3-http-provider');
 const abi = require('./NFTSamples/NFT_BaseURI.json').abi;
 
 const nodeId = process.env.nodeId;
 const networkId = process.env.networkId;
-
+const defaultEnv = process.env.ENV || "AWS";
 /*
 * Copyright 2015-2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 *
@@ -16,7 +16,45 @@ const networkId = process.env.networkId;
 *
 * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 */
-console.log('Loading function');
+
+const getProvider = async (env = defaultEnv) =>  {
+  if (env == "AWS") {
+    let endpoint = await getHTTPendpoint(nodeId,networkId)
+    endpoint = `https://${endpoint}`;
+    const baseProvider = new AWSHttpProvider(endpoint);
+    const provider = new providers.Web3Provider(baseProvider);
+    return provider;
+  }
+  else {
+    const infura = new providers.InfuraProvider("rinkeby")
+    return infura;
+  }
+}
+
+const getPolicy = (methodArn, principalId, deny = true) => {
+  // build apiOptions for the AuthPolicy
+  var apiOptions = {};
+  var tmp = methodArn.split(':');
+  var apiGatewayArnTmp = tmp[5].split('/');
+  var awsAccountId = tmp[4];
+  apiOptions.region = tmp[3];
+  apiOptions.restApiId = apiGatewayArnTmp[0];
+  apiOptions.stage = apiGatewayArnTmp[1];
+  var method = apiGatewayArnTmp[2];
+  var resource = '/'; // root resource
+  if (apiGatewayArnTmp[3]) {
+      resource += apiGatewayArnTmp.slice(3, apiGatewayArnTmp.length).join('/');
+  }
+
+  var policy = new AuthPolicy(principalId, awsAccountId, apiOptions);
+  if (deny) { // check if the signer is the owner of the token   
+    policy.denyAllMethods();
+  }
+  else {
+    policy.allowMethod(AuthPolicy.HttpVerb.GET, "/assets/*");
+  }
+  var authResponse = policy.build();
+}
 
 exports.handler = async function(event, context) {
     // Do not print the auth token unless absolutely necessary
@@ -44,41 +82,16 @@ exports.handler = async function(event, context) {
       throw new Error("No contract address specified");
     }
 
-    let endpoint = await getHTTPendpoint(nodeId,networkId)
-    endpoint = `https://${endpoint}`;
-    const baseProvider = new AWSHttpProvider(endpoint);
-    const provider = new ethers.providers.Web3Provider(baseProvider);
+    const provider = await getProvider()
 
     const nft_contract = new ethers.Contract(messageDetails.contractAddress, abi, provider);
-    const address =  await nft_contract.ownerOf(messageDetails.tokenId)
+    const tokenOwnerAddress =  await nft_contract.ownerOf(messageDetails.tokenId)
 
     console.log(`request token: ${messageDetails.tokenId}; contract address: ${messageDetails.contractAddress}, token Owner ${address}`)
       // if access is denied, the client will receive a 403 Access Denied response
     // if access is allowed, API Gateway will proceed with the backend integration configured on the method that was called
-
-    // build apiOptions for the AuthPolicy
-    var apiOptions = {};
-    var tmp = event.methodArn.split(':');
-    var apiGatewayArnTmp = tmp[5].split('/');
-    var awsAccountId = tmp[4];
-    apiOptions.region = tmp[3];
-    apiOptions.restApiId = apiGatewayArnTmp[0];
-    apiOptions.stage = apiGatewayArnTmp[1];
-    var method = apiGatewayArnTmp[2];
-    var resource = '/'; // root resource
-    if (apiGatewayArnTmp[3]) {
-        resource += apiGatewayArnTmp.slice(3, apiGatewayArnTmp.length).join('/');
-    }
+    const authResponse = getPolicy(event.methodArn, principalId, tokenOwnerAddress != signature.address)
     
-    var policy = new AuthPolicy(principalId, awsAccountId, apiOptions);
-    if (address != signature.address) { // check if the signer is the owner of the token   
-      policy.denyAllMethods();
-      
-    }
-    else {
-      policy.allowMethod(AuthPolicy.HttpVerb.GET, "/assets/*");
-    }
-    var authResponse = policy.build();
 
     // // new! -- add additional key-value pairs
     // // these are made available by APIGW like so: $context.authorizer.<key>
