@@ -53,7 +53,7 @@ const getPolicy = (methodArn, principalId, deny = true) => {
   else {
     policy.allowMethod(AuthPolicy.HttpVerb.GET, "/assets/*");
   }
-  var authResponse = policy.build();
+  return policy.build();
 }
 
 exports.handler = async function(event, context) {
