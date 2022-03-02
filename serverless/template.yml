@@ -117,7 +117,7 @@ Resources:
         Authorizers:  
           MyLambdaTokenAuth:
             FunctionArn: !GetAtt nftauth.Arn
-  nftmain:
+  nftmint:
     Type: AWS::Serverless::Function
     Properties:
       Environment:
@@ -129,7 +129,7 @@ Resources:
          pvtkey: "ethSystemKey"
       Handler: index.handler
       Runtime: nodejs14.x
-      CodeUri: lambdas/nftmain/.
+      CodeUri: lambdas/nftmint/.
       Description: Call the AWS Lambda API for NFT
       Timeout: 10
       # Function's execution role
@@ -169,6 +169,28 @@ Resources:
         - AWSLambda_ReadOnlyAccess
         - AmazonManagedBlockchainFullAccess 
         - AmazonSSMReadOnlyAccess
+
+  nftdetails: 
+    Type: AWS::Serverless::Function
+    Properties:
+      Environment:
+        Variables:
+          nodeId: !GetAtt EthereumNode.NodeId
+          networkId: !GetAtt EthereumNode.NetworkId
+          bucketName: !Ref nfMetadataBucket
+          pvtkey: "ethSystemKey"
+      Handler: index.handler
+      Runtime: nodejs14.x
+      CodeUri: lambdas/nftdetails/.
+      Description: GetMetaData 
+      Timeout: 10
+      Policies: 
+        - AWSLambdaBasicExecutionRole
+        - AWSLambda_ReadOnlyAccess
+        - AmazonManagedBlockchainFullAccess 
+        - AmazonSSMReadOnlyAccess
+        - S3ReadPolicy:
+            BucketName: !Ref nfMetadataBucket
       Events:
         postEndpoint:
           Type: Api
@@ -176,6 +198,8 @@ Resources:
             RestApiId: !Ref nftapi
             Path: /assets/{proxy+}
             Method: GET
+            Auth: 
+              Authorizer: MyLambdaTokenAuth
   ecrRepository:
     Type: AWS::ECR::Repository
     Properties:
@@ -253,9 +277,6 @@ Outputs:
 
   txTopicARN:
     Value: !Ref ethTxnTopic
-
-  nftmainName:
-    Value: !Ref nftmain
 
   nftApi:
     Value: !Ref nftapi

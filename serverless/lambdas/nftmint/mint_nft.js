@@ -2,8 +2,24 @@ const AWS = require('aws-sdk');
 const AWSHttpProvider = require('./aws-web3-http-provider');
 const utils  = require('./utils');
 const ethers = require('ethers');
+const uuid = require('uuid')
+
 const nodeId = process.env.nodeId;
 const networkId = process.env.networkId;
+const bucketName = process.env.bucketName;
+const s3 = new AWS.S3({apiVersion: '2006-03-01'});
+
+const putMetadata = async (id, bucket = bucketName, folderPrefix = "metadata") => {
+  const fileParams = {  
+    Bucket: bucketName,
+    // ACL: 'public-read',
+    Key: `${folderPrefix}/${metadataId}.json`,
+    Body: JSON.stringify(metadata)
+  };
+  //store the metadata file for the NFT in an S3 bucket
+  await s3.putObject(fileParams).promise();
+
+}
 
 const mintNFT = async (contractAddress, mintAddress, metadataUrl, gasLimit = 100000, gasPrice = 100000000000) => {
     let endpoint = await utils.getHTTPendpoint(nodeId,networkId)
@@ -30,4 +46,4 @@ const mintNFT = async (contractAddress, mintAddress, metadataUrl, gasLimit = 100
      return {"Minting Error": error};
      }
    }
-module.exports = { mintNFT:mintNFT }
+module.exports = { mintNFT, putMetadata }
