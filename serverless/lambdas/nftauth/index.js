@@ -96,11 +96,10 @@ exports.handler = async function(event, context) {
     // // new! -- add additional key-value pairs
     // // these are made available by APIGW like so: $context.authorizer.<key>
     // // additional context is cached
-    // authResponse.context = {
-    //   key : 'value', // $context.authorizer.key -> value
-    //   number : 1,
-    //   bool: true
-    // };
+    authResponse.context = {
+      contractAddress : messageDetails.contractAddress,
+      tokenId : tails.tokenId
+    };
 
     return authResponse
   } 

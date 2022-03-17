@@ -9,9 +9,9 @@ const METADATA_PREFIX = "metadata"
 // Handler
 exports.handler = async function(event, context) {
   let responseObject = null;
-try {
-  console.log('EVENT', event.body);
-  const requestType = JSON.parse(event.body).requestType;
+  try {
+    console.log('EVENT', event.body);
+    const { requestType } = JSON.parse(event.body);
 
   switch(requestType.toLowerCase()) {
     case 'deploy':  
@@ -23,20 +23,14 @@ try {
     case 'mint': 
       {        
         let {contractAddress, mintAddress, gasLimit, gasPrice, metadata} = JSON.parse(event.body);
-        const metadataId = uuid.uuidv4(); // can alternativeley use await getDetails.getTokenId(contractAddress)
+        const metadataId = uuid.v4(); // can alternativeley use await getDetails.getTokenId(contractAddress)
         // const fullMetadataUri = `${baseURI}${METADATA_PREFIX}/${metadataId}.json`;
         
-        await mintNFT.putMetadata(metadataId)
+        await mintNFT.putMetadata(metadataId, metadata)
         
-        const mintParams = {
-          contractAddress, 
-          mintAddress, 
-          metadataUrl = `${metadataId}.json`,
-          gasLimit, 
-          gasPrice
-        }
         //call the mint NFT function
-        responseObject = await mintNFT.mintNFT(...mintParams)
+        responseObject = await mintNFT.mintNFT(contractAddress, mintAddress, `${metadataId}.json`, gasLimit, gasPrice)
+
         break;
     }
     default:
@@ -44,9 +38,7 @@ try {
         break;
     } //switch
   } catch (err) {
-    console.log(err)
     responseObject = err;
-
   }
 
   console.log(responseObject);

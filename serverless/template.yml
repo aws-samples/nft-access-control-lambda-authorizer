@@ -147,7 +147,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref nftapi
-            Path: /
+            Path: /mint
             Method: POST
   nftauth:
     Type: AWS::Serverless::Function
@@ -196,7 +196,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref nftapi
-            Path: /assets/{proxy+}
+            Path: /assets/{tokenId}
             Method: GET
             Auth: 
               Authorizer: MyLambdaTokenAuth

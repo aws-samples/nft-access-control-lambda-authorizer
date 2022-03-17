@@ -6,6 +6,8 @@ const AWS = require('aws-sdk');
 const nodeId = process.env.nodeId;
 const networkId = process.env.networkId;
 const bucketName = process.env.bucketName;
+const METADATA_PREFIX = "metadata"
+
 const s3 = new AWS.S3({apiVersion: '2006-03-01'});
 
 const getTokenId = async (contractAddress) => {
@@ -57,11 +59,11 @@ const getTokenOnChainDetails = async (contractAddress, tokenID) => {
     }
   }
   
-const getTokenMetadata = async (tokenId, bucket = bucketName, folderPrefix = "metadata") => {
+const getTokenMetadata = async (tokenId, folderPrefix = METADATA_PREFIX, bucket = bucketName) => {
   const fileParams = {  
     Bucket: bucketName,
     // ACL: 'public-read',
-    Key: `${folderPrefix}/${metadataId}.json`,
+    Key: `${folderPrefix}/${tokenId}.json`,
   };
 
   const obj = await s3.getObject(fileParams).promise()
