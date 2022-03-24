@@ -2,7 +2,7 @@
 "requestType": "deploy",
 "tokenName": "mzawsnft",
 "tokenTicker": "MZAN",
-"baseURI": "https://d3i60wwbxl0tk7.cloudfront.net/metadata/"
+"baseURI": "https://49drke25p0.execute-api.us-east-1.amazonaws.com/nftapi/assets/"
 }
 
 

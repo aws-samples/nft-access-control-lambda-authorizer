@@ -29,8 +29,8 @@ exports.handler = async function(event, context) {
         await mintNFT.putMetadata(metadataId, metadata)
         
         //call the mint NFT function
-        responseObject = await mintNFT.mintNFT(contractAddress, mintAddress, `${metadataId}.json`, gasLimit, gasPrice)
-
+        responseObject = await mintNFT.mintNFT(contractAddress, mintAddress, metadataId, gasLimit, gasPrice)
+        responseObject = {id: metadataId, ...responseObject}
         break;
     }
     default:

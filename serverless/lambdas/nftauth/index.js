@@ -86,19 +86,21 @@ exports.handler = async function(event, context) {
 
     const nft_contract = new ethers.Contract(messageDetails.contractAddress, abi, provider);
     const tokenOwnerAddress =  await nft_contract.ownerOf(messageDetails.tokenId)
+    const tokenUri = await nft_contract.tokenURI(messageDetails.tokenId)
 
-    console.log(`request token: ${messageDetails.tokenId}; contract address: ${messageDetails.contractAddress}, token Owner ${address}`)
+    console.log(`Request token: ${messageDetails.tokenId}; contract address: ${messageDetails.contractAddress}, token Owner: ${tokenOwnerAddress.toString()}, signature address: ${signature.address}`)
       // if access is denied, the client will receive a 403 Access Denied response
     // if access is allowed, API Gateway will proceed with the backend integration configured on the method that was called
-    const authResponse = getPolicy(event.methodArn, principalId, tokenOwnerAddress != signature.address)
-    
+    const authResponse = getPolicy(event.methodArn, principalId, tokenOwnerAddress.toString() != signature.address)
 
     // // new! -- add additional key-value pairs
     // // these are made available by APIGW like so: $context.authorizer.<key>
     // // additional context is cached
     authResponse.context = {
+      owner: tokenOwnerAddress.toString(),
       contractAddress : messageDetails.contractAddress,
-      tokenId : tails.tokenId
+      tokenId : messageDetails.tokenId,
+      uri: tokenUri.toString()
     };
 
     return authResponse

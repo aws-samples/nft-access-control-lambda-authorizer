@@ -51,19 +51,20 @@ const getTokenOnChainDetails = async (contractAddress, tokenID) => {
     //attaching to a deployed contract and interacting with your contract
     const erc721 = new ethers.Contract(contractAddress, abi, myWallet);
     try {
-    const owner = await erc721.ownerOf(tokenID);
-    const uri = await erc721.tokenURI(tokenID)
-    return {owner, uri};
-      } catch (error) {
+      const owner = await erc721.ownerOf(tokenID);
+      const uri = await erc721.tokenURI(tokenID)
+      return {owner, uri};
+    } catch (error) {
      return {"Error": error};
     }
   }
   
-const getTokenMetadata = async (tokenId, folderPrefix = METADATA_PREFIX, bucket = bucketName) => {
+const getTokenMetadata = async (metadataId, folderPrefix = METADATA_PREFIX, bucket = bucketName) => {
+  console.log(`metadata:${metadataId}, folder: ${folderPrefix}, bucket: ${bucket} `)
   const fileParams = {  
-    Bucket: bucketName,
+    Bucket: bucket,
     // ACL: 'public-read',
-    Key: `${folderPrefix}/${tokenId}.json`,
+    Key: `${folderPrefix}/${metadataId}.json`,
   };
 
   const obj = await s3.getObject(fileParams).promise()

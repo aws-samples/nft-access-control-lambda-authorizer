@@ -1,6 +1,6 @@
 {
   "requestType": "mint",
-  "contractAddress": "0x9143A571cCb270eE5035e49b640506bd422387c2",
+  "contractAddress": "0x857f283f12C44897f24d60c8b2d9586AcbFAA06A",
   "mintAddress": "0x97784017897335b5e28B62Dfc04ED8fc6408A157",
   "gasLimit": 9000000,
   "gasPrice": 99999999999,

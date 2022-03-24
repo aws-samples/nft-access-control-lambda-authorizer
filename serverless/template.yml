@@ -196,7 +196,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref nftapi
-            Path: /assets/{tokenId}
+            Path: /assets/{metadata}
             Method: GET
             Auth: 
               Authorizer: MyLambdaTokenAuth

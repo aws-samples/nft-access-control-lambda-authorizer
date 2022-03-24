@@ -1,11 +1,14 @@
 {
-  "type": "TOKEN",
-  "authorizationToken": "ewogICJhZGRyZXNzIjogIjB4NEZCRjBFNkM4MUZhM2Q0RDE5YTRjNDU4NzA3QTI2RTBGNTFjOTQ1NCIsCiAgIm1zZyI6ICJ7IFwicmVzb3VyY2VcIjogXCJuZnRcIiwgXCJ0b2tlbklkXCI6IDAsIFwiY29udHJhY3RBZGRyZXNzXCI6IFwiMHg0OWQ0MzM2RDViN0JFNjk5ZUNGN2YwNmNDOUUyNzdENEQzMEUzODRjXCJ9IiwKICAic2lnIjogIjB4ZGM5MDYwYzY0NDkzNmQxNTdhOTViNjhhYzhlOWZjYjkwODg1YjNmY2E1ZGY0MmFhMmZjNjhlYWVlZTg3ZDY2ODMzNGEyOGE0NGUwZjllNTQ2ZTFlZTdhMWI1MmJlMzE5MzQ2NzJjOGYxMTMzMjg1MjE2MGRhZTFlOGU5ZjdlNGUxYyIsCiAgInZlcnNpb24iOiAiMiIKfQ==",
-  "methodArn": "arn:aws:execute-api:us-east-1:123456789012:/prod/assets/{proxy+}",
-  "raw": {
-    "address": "0x4FBF0E6C81Fa3d4D19a4c458707A26E0F51c9454",
-    "msg": "{ \"resource\": \"nft\", \"tokenId\": 0, \"contractAddress\": \"0x49d4336D5b7BE699eCF7f06cC9E277D4D30E384c\"}",
-    "sig": "0xdc9060c644936d157a95b68ac8e9fcb90885b3fca5df42aa2fc68eaeee87d668334a28a44e0f9e546e1ee7a1b52be31934672c8f11332852160dae1e8e9f7e4e1c",
+  "header": {
+    "type": "TOKEN",
+    "authorizationToken": "ewogICJhZGRyZXNzIjogIjB4OTc3ODQwMTc4OTczMzViNWUyOEI2MkRmYzA0RUQ4ZmM2NDA4QTE1NyIsCiAgIm1zZyI6ICJ7IFwicmVzb3VyY2VcIjogXCJuZnRcIiwgXCJ0b2tlbklkXCI6IDAsIFwiY29udHJhY3RBZGRyZXNzXCI6IFwiMHg4NTdmMjgzZjEyYzQ0ODk3ZjI0ZDYwYzhiMmQ5NTg2YWNiZmFhMDZhXCIgfSIsCiAgInNpZyI6ICIweDFlMTk0NDYyZGU3YmU2NThhNzZjYzJhYzA0YzhhYmQ5M2FhNTQ4ZmM0MzhlYmZiNDVmMjQ0OWE0M2QwZTljMmU0ZmNmMGQ2Yzc4M2YyNjYxYWExYjkwYzY1ZGNlMWZiZmZhN2FmNTQzNzRmOTFiNDgyNWZlMmFhNmYyMjk5ODFkMWIiLAogICJ2ZXJzaW9uIjogIjIiCn0=",
+    "methodArn": "arn:aws:execute-api:us-east-1:123456789012:/prod/assets/{proxy+}"
+  },
+  "signed": {
+    "address": "0x97784017897335b5e28B62Dfc04ED8fc6408A157",
+    "msg": "{ \"resource\": \"nft\", \"tokenId\": 0, \"contractAddress\": \"0x857f283f12c44897f24d60c8b2d9586acbfaa06a\" }",
+    "sig": "0x1e194462de7be658a76cc2ac04c8abd93aa548fc438ebfb45f2449a43d0e9c2e4fcf0d6c783f2661aa1b90c65dce1fbffa7af54374f91b4825fe2aa6f229981d1b",
     "version": "2"
-  }
+  },
+  "raw": { "resource": "nft", "tokenId": 0, "contractAddress": "0x857f283f12c44897f24d60c8b2d9586acbfaa06a" }
 }
