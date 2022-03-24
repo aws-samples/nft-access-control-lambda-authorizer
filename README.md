@@ -1,5 +1,5 @@
 
-## Control NFT Access using S3 Object Lambda
+## Control NFT Access using API Gateway Lambda authorizer
 
 
 For more details on how to deplpy an NFT please refer to the following [blog](https://aws.amazon.com/blogs/database/mint-and-deploy-nfts-to-the-ethereum-blockchain-using-amazon-managed-blockchain/)

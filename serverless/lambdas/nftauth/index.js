@@ -64,7 +64,7 @@ exports.handler = async function(event, context) {
     const signBuff = Buffer.from(event.authorizationToken, 'base64')
     const signature = JSON.parse(signBuff.toString())
     
-    const resultAddress = ethers.utils.verifyMessage(signature.msg, signature.sig)
+    const resultAddress = ethers.utils.verifyMessage(signature.message, signature.signature)
 
     console.log(`signature address:${resultAddress}, event address:${signature.address}`)
 
