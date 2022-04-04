@@ -2,7 +2,7 @@ const AWS = require('aws-sdk');
 const AWSHttpProvider = require('./aws-web3-http-provider');
 const utils  = require('./utils');
 const ethers = require('ethers');
-const uuid = require('uuid')
+
 
 const nodeId = process.env.nodeId;
 const networkId = process.env.networkId;

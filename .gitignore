@@ -4,8 +4,7 @@ Config
 *.DS_Store
 *.aws-sam
 .vscode/
-node_modules/
-
-!*shared/nodejs/node_modules/
+*node_modules/
+!serverless/lambdas/shared/nodejs/node_modules/
 
 # !/Users/matanzu/Projects/blockchain/nft-deployment-amazon-managed-blockchain/serverless/lambdas/shared/nodejs/node_modules/onchain-utils

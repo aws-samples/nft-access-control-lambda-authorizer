@@ -2,7 +2,7 @@ const AWS = require('aws-sdk');
 const deployContract = require('./deploy_contract');
 const mintNFT = require('./mint_nft');
 const uuid = require('uuid')
-
+// const {providers, wallets} = require('onchain-utils')
 
 
 const METADATA_PREFIX = "metadata"

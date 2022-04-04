@@ -1,6 +1,6 @@
 const AWS = require('aws-sdk');
 const { ethers, providers } = require('ethers');
-const { getHTTPendpoint, getSSMParam } = require('./utils')
+const { getHTTPendpoint } = require('./utils')
 const AWSHttpProvider = require('./aws-web3-http-provider');
 const abi = require('./NFTSamples/NFT_BaseURI.json').abi;
 

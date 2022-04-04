@@ -1,7 +1,6 @@
 const AWS = require('aws-sdk');
 const getDetails = require('./get_details');
 
-
 // Handler
 exports.handler = async function(event, context) {
   let responseObject = null;
