@@ -4,3 +4,5 @@ node_modules/
 *.DS_Store
 *.aws-sam
 .vscode/
+
+!*/shared/nodejs/node_modules/
