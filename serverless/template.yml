@@ -34,6 +34,12 @@ Resources:
       StageName: nftapi
       TracingEnabled: true
       OpenApiVersion: 3.0.2
+      Cors:
+        AllowMethods: "'POST, GET'"
+        AllowHeaders: "'X-Forwarded-For'"
+        AllowOrigin: "'*'"
+        MaxAge: "'600'"
+        AllowCredentials: true
       Auth:
         ResourcePolicy:
           IpRangeWhitelist: 
@@ -72,6 +78,36 @@ Resources:
             Method: POST
       Layers:
         - !Ref onchainUtils
+  
+  nftdeploy:
+    Type: AWS::Serverless::Function
+    Properties:
+      Environment:
+       Variables:
+         nodeId: !GetAtt EthereumNode.NodeId
+         networkId: !GetAtt EthereumNode.NetworkId
+         bucketName: !Ref nfMetadataBucket
+         pvtkey: "ethSystemKey"
+      Handler: index.handler
+      Runtime: nodejs14.x
+      CodeUri: lambdas/nftdeploy/.
+      Description: Call the AWS Lambda API to deploy a sample nft contract
+      Timeout: 10
+      # Function's execution role
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AWSLambda_ReadOnlyAccess
+        - AmazonManagedBlockchainFullAccess 
+        - AmazonSSMReadOnlyAccess
+      Events:
+        postEndpoint:
+          Type: Api
+          Properties:
+            RestApiId: !Ref nftapi
+            Path: /deploy
+            Method: POST
+      Layers:
+        - !Ref onchainUtils
   nftauth:
     Type: AWS::Serverless::Function
     Properties:
@@ -92,6 +128,8 @@ Resources:
         - AWSLambda_ReadOnlyAccess
         - AmazonManagedBlockchainFullAccess 
         - AmazonSSMReadOnlyAccess
+      Layers:
+        - !Ref onchainUtils
 
   nftdetails: 
     Type: AWS::Serverless::Function
@@ -123,6 +161,8 @@ Resources:
             Method: GET
             Auth: 
               Authorizer: MyLambdaTokenAuth
+      Layers:
+        - !Ref onchainUtils
 
   onchainUtils:
     Type: AWS::Serverless::LayerVersion
