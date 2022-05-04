@@ -51,7 +51,7 @@ export default function TokenMetadata(props) {
         <div className="card bg-base-100 shadow-2xl">
         <div className="card-body">
         <div>
-            <h1 className="p-4 card-title text-black">      
+            <h1 className="p-4 card-title">      
                 GET METADATA
             </h1>
             <div className="container my-6">
