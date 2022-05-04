@@ -35,11 +35,10 @@ Resources:
       TracingEnabled: true
       OpenApiVersion: 3.0.2
       Cors:
-        AllowMethods: "'POST, GET'"
-        AllowHeaders: "'X-Forwarded-For'"
+        AllowMethods: "'POST, GET, OPTIONS'"
+        AllowHeaders: "'X-Forwarded-For, Content-type, Authorization'"
         AllowOrigin: "'*'"
         MaxAge: "'600'"
-        AllowCredentials: true
       Auth:
         ResourcePolicy:
           IpRangeWhitelist: 

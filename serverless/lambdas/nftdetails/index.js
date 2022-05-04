@@ -9,11 +9,11 @@ try {
     if (!event.requestContext || !event.requestContext.authorizer) {
       throw "no requestContext";
     }
-    const {contractAddress, tokenId} = event.requestContext.authorizer
-    const {metadata} = event.pathParameters;
-    console.log(`token: ${tokenId}, contract: ${contractAddress}, metadata: ${metadata}`)
+    const {contractAddress, tokenId, metadataId} = event.requestContext.authorizer
+    // const {metadata} = event.pathParameters;
+    console.log(`token: ${tokenId}, contract: ${contractAddress}, metadata: ${metadataId}`)
 
-    responseObject = await getDetails.getTokenMetadata(metadata)
+    responseObject = await getDetails.getTokenMetadata(metadataId)
   
   } catch (err) {
     console.log(err)
@@ -24,7 +24,8 @@ try {
      statusCode: 200,
      body: JSON.stringify(responseObject),
      headers: {
-       "Content-Type": "application/json"
+       "Content-Type": "application/json",
+       "Access-Control-Allow-Origin": "*"
      }
   }
 } 

@@ -3,6 +3,7 @@ const { ethers } = require('ethers');
 const {providers, tokenUtils, samples} = require('onchain-utils')
 const {getPolicy} = require('./policy')
 
+const re = /([a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12})/i;
 /*
 * Copyright 2015-2016 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 *
@@ -32,7 +33,7 @@ exports.handler = async function(event, context) {
       throw new Error("Unauthorized")
     }
     
-    const messageDetails = JSON.parse(signature.msg)
+    const messageDetails = JSON.parse(signature.message)
 
     if (!messageDetails.contractAddress) {
       throw new Error("No contract address specified");
@@ -46,8 +47,16 @@ exports.handler = async function(event, context) {
 
     const { owner, uri } = await tokenUtils.getTokenOnChainDetails(provider, abi, messageDetails.contractAddress, messageDetails.tokenId)
 
-    console.log(`Request token: ${messageDetails.tokenId}; contract address: ${messageDetails.contractAddress}, token Owner: ${owner.toString()}, signature address: ${signature.address}`)
-      // if access is denied, the client will receive a 403 Access Denied response
+    console.log(`Request token: ${messageDetails.tokenId}, metadataId: ${messageDetails.metadataId}, token uri: ${uri}, contract address: ${messageDetails.contractAddress}, token Owner: ${owner.toString()}, signature address: ${signature.address}`)
+    
+    const uriMatch = re.exec(uri)
+    const uriMetadataId =  uriMatch ? uriMatch[1] : null;
+    
+    if (uriMetadataId != messageDetails.metadataId) {
+      throw new Error("metadata doesn't match")
+    }
+    
+    // if access is denied, the client will receive a 403 Access Denied response
     // if access is allowed, API Gateway will proceed with the backend integration configured on the method that was called
     const authResponse = getPolicy(event.methodArn, principalId, owner.toString() != signature.address)
 
@@ -58,6 +67,7 @@ exports.handler = async function(event, context) {
       owner: owner.toString(),
       contractAddress : messageDetails.contractAddress,
       tokenId : messageDetails.tokenId,
+      metadataId: messageDetails.metadataId,
       uri: uri.toString()
     };
 

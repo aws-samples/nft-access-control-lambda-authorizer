@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { ethers } from "ethers";
+import {TokenDetailsInput} from "./Inputs";
 
 
 const signMessage = async ( message ) => {
@@ -30,60 +31,59 @@ const signMessage = async ( message ) => {
   }
 };
 
-export default function Sign() {
-  const resultBox = useRef();
-  const [signedMessage, setSignedMessage] = useState();
+
+export default function Sign(props) {
+  const [tokenType, setTokenType] = useState("nft");
+  const [tokenId, setTokenId] = useState(0);
+  const [contractAddress, setContractAddress] = useState("");
 
   const handleSign = async (e) => {
     e.preventDefault();
-    const data = new FormData(e.target);
-    const sig = await signMessage(data.get("message"));
+    const data = { "resource": tokenType, "tokenId": tokenId, "contractAddress": contractAddress, 
+                    "metadataId": props.metadataId }
+
+    console.log(data)
+    const sig = await signMessage(JSON.stringify(data));
     console.log(sig)
     if (sig) {
-      setSignedMessage(sig);
-     
+      props.dispatch({type: "signedMessage", payload: sig });
     }
   };
+
+  const handleMetadataIdChange = (val) => {
+    props.dispatch({type: "metadataId", payload: val})
+  }
 
   return (
     <div className="card bg-base-100 shadow-2xl">
     <div className="card-body">
-    <form className="m-4" onSubmit={handleSign}>
-        <main className="">
-          <h1 className="p-4 card-title text-white">
+      <div>
+          <h1 className="p-4 card-title text-black">      
             SIGN MESSAGE
           </h1>
-          <div className="">
-            <div className="my-3">
-              <textarea
-                required
-                type="text"
-                name="message"
-                className="textarea w-full h-24 textarea-bordered focus:ring"
-                placeholder="Message"
-              />
-            </div>
+          <div className="container my-5">
+            <TokenDetailsInput 
+              tokenType={tokenType} 
+              tokenId={tokenId} onTokenIdChange={(val) => setTokenId(Number(val)) } 
+              metadataId={props.metadataId} onMetadataIdChange={handleMetadataIdChange}
+              contractAddress={contractAddress} onContractChange={setContractAddress}
+            />
           </div>
           <button
-            type="submit"
             className="btn btn-secondary submit-button focus:ring w-full"
-          >
+            onClick={handleSign}>
             Sign message
           </button>
-        </main>
-        <footer className="pt-2">
-        <div className="my-3">
-                <textarea
-                  type="text"
-                  readOnly
-                  ref={resultBox}
-                  className="textarea w-full h-24 textarea-bordered focus:ring"
-                  placeholder="{ message: 1234, signature: 0x..., address: 0x...}"
-                  value={JSON.stringify(signedMessage)}
-                />
-              </div> 
-          </footer>    
-        </form>
+          <div className="my-3">
+            <textarea
+              type="text"
+              readOnly
+              className="textarea label w-full h-24 textarea-bordered textarea-info focus:ring"
+              placeholder="{ message: 1234, signature: 0x..., address: 0x...}"
+              value={props.signedMessage ? JSON.stringify(props.signedMessage):""}
+            />
+          </div> 
+        </div>
       </div>
     </div>
   );
