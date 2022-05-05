@@ -5,13 +5,8 @@ export function APIInput(props) {
         <div className="flex flex-col space-y-4">
             <div className="flex space-x-3" >
                 <label className="label w-1/3 max-w-xs"><span className="label-text">Base API URL</span></label>
-                {/* <label class="label"><span className="label-text">{api}</span></label> */}
                 <input className="input w-full input-bordered input-ghost  max-w-xs" type="text" value={props.apiBaseUrl} onChange={(e) => props.onAPIChange(e.target.value)} /> 
             </div>
-            {/* <div className="flex space-x-3" >
-                <label class="label"><span className="label-text">Encoded Message</span></label>
-                <input readOnly className="input w-full input-bordered  max-w-xs" type="text" value={props.message} /> 
-            </div> */}
         </div>
     )
 }

@@ -42,9 +42,7 @@ export default function Sign(props) {
     const data = { "resource": tokenType, "tokenId": tokenId, "contractAddress": contractAddress, 
                     "metadataId": props.metadataId }
 
-    console.log(data)
     const sig = await signMessage(JSON.stringify(data));
-    console.log(sig)
     if (sig) {
       props.dispatch({type: "signedMessage", payload: sig });
     }

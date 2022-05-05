@@ -41,7 +41,6 @@ export default function TokenMetadata(props) {
         e.preventDefault()
         const url = `${apiBaseUrl}/${props.metadataId}`
         const result = await getMetadata(url, encodedMessage)
-        console.log(result)
         if (result) {
             props.dispatch({type: "tokenMetadata", payload: result})
         }

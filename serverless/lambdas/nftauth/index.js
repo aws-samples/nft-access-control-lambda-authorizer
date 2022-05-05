@@ -49,6 +49,7 @@ exports.handler = async function(event, context) {
 
     console.log(`Request token: ${messageDetails.tokenId}, metadataId: ${messageDetails.metadataId}, token uri: ${uri}, contract address: ${messageDetails.contractAddress}, token Owner: ${owner.toString()}, signature address: ${signature.address}`)
     
+    // Get Metadata from the the token metadata URI and check it matches to the one in the signed message.
     const uriMatch = re.exec(uri)
     const uriMetadataId =  uriMatch ? uriMatch[1] : null;
     
