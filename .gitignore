@@ -8,4 +8,4 @@ Config
 !serverless/lambdas/shared/nodejs/node_modules/
 
 .env
-# !/Users/matanzu/Projects/blockchain/nft-deployment-amazon-managed-blockchain/serverless/lambdas/shared/nodejs/node_modules/onchain-utils
+serverless/test-events/env.json
