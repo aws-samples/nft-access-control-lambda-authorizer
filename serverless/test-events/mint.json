@@ -1,0 +1,12 @@
+{
+  "requestType": "mint",
+  "contractAddress": "0x857f283f12C44897f24d60c8b2d9586AcbFAA06A",
+  "mintAddress": "0x97784017897335b5e28B62Dfc04ED8fc6408A157",
+  "gasLimit": 9000000,
+  "gasPrice": 99999999999,
+  "metadata": {
+    "description": "useful descriptiom", 
+    "image": "https://d3i60wwbxl0tk7.cloudfront.net/download.jpeg", 
+    "name": " My cool nft"
+  }
+}

@@ -1,0 +1,184 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: Lambdas, API Gateway Endpoint,Fargate task, SNS topics for NFT processing
+Parameters:
+  pNftBucketName:
+    Type: String
+    Description: Bucket where NFT Metadata will be stored
+  pIpRangeWhitelist:
+    Type: String
+    Description: IP range that is allowed to invoke the nftapi
+  pNetworkId:
+    Type: String
+    Default: "n-ethereum-rinkeby"
+  pInstanceType:
+    Type: String
+    Default: "bc.t3.large"
+  pAvailabilityZone:
+    Type: String
+Resources:
+  EthereumNode:
+    Type: "AWS::ManagedBlockchain::Node"
+    Properties:
+      NetworkId: !Ref pNetworkId
+      NodeConfiguration:
+        InstanceType: !Ref pInstanceType
+        AvailabilityZone: !Ref pAvailabilityZone
+  nfMetadataBucket:
+   Type: AWS::S3::Bucket
+   Properties:
+      BucketName: !Join ['-', [!Ref AWS::AccountId,!Ref pNftBucketName]]
+  nftapi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: nftapi
+      TracingEnabled: true
+      OpenApiVersion: 3.0.2
+      Cors:
+        AllowMethods: "'POST, GET, OPTIONS'"
+        AllowHeaders: "'X-Forwarded-For, Content-type, Authorization'"
+        AllowOrigin: "'*'"
+        MaxAge: "'600'"
+      Auth:
+        ResourcePolicy:
+          IpRangeWhitelist: 
+            - !Ref pIpRangeWhitelist
+        Authorizers:  
+          MyLambdaTokenAuth:
+            FunctionArn: !GetAtt nftauth.Arn
+  nftmint:
+    Type: AWS::Serverless::Function
+    Properties:
+      Environment:
+       Variables:
+         nodeId: !GetAtt EthereumNode.NodeId
+         networkId: !GetAtt EthereumNode.NetworkId
+         bucketName: !Ref nfMetadataBucket
+         pvtkey: "ethSystemKey"
+      Handler: index.handler
+      Runtime: nodejs14.x
+      CodeUri: lambdas/nftmint/.
+      Description: Call the AWS Lambda API for NFT
+      Timeout: 10
+      # Function's execution role
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AWSLambda_ReadOnlyAccess
+        - AmazonManagedBlockchainFullAccess 
+        - AmazonSSMReadOnlyAccess
+        - S3WritePolicy:
+            BucketName: !Ref nfMetadataBucket
+      Events:
+        postEndpoint:
+          Type: Api
+          Properties:
+            RestApiId: !Ref nftapi
+            Path: /mint
+            Method: POST
+      Layers:
+        - !Ref onchainUtils
+  
+  nftdeploy:
+    Type: AWS::Serverless::Function
+    Properties:
+      Environment:
+       Variables:
+         nodeId: !GetAtt EthereumNode.NodeId
+         networkId: !GetAtt EthereumNode.NetworkId
+         bucketName: !Ref nfMetadataBucket
+         pvtkey: "ethSystemKey"
+      Handler: index.handler
+      Runtime: nodejs14.x
+      CodeUri: lambdas/nftdeploy/.
+      Description: Call the AWS Lambda API to deploy a sample nft contract
+      Timeout: 10
+      # Function's execution role
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AWSLambda_ReadOnlyAccess
+        - AmazonManagedBlockchainFullAccess 
+        - AmazonSSMReadOnlyAccess
+      Events:
+        postEndpoint:
+          Type: Api
+          Properties:
+            RestApiId: !Ref nftapi
+            Path: /deploy
+            Method: POST
+      Layers:
+        - !Ref onchainUtils
+  nftauth:
+    Type: AWS::Serverless::Function
+    Properties:
+      Environment:
+        Variables:
+          nodeId: !GetAtt EthereumNode.NodeId
+          networkId: !GetAtt EthereumNode.NetworkId
+          bucketName: !Ref nfMetadataBucket
+          pvtkey: "ethSystemKey"
+      Handler: index.handler
+      Runtime: nodejs14.x
+      CodeUri: lambdas/nftauth/.
+      Description: LambdaAuthorizer 
+      Timeout: 10
+      # Function's execution role
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AWSLambda_ReadOnlyAccess
+        - AmazonManagedBlockchainFullAccess 
+        - AmazonSSMReadOnlyAccess
+      Layers:
+        - !Ref onchainUtils
+
+  nftdetails: 
+    Type: AWS::Serverless::Function
+    Properties:
+      Environment:
+        Variables:
+          nodeId: !GetAtt EthereumNode.NodeId
+          networkId: !GetAtt EthereumNode.NetworkId
+          bucketName: !Ref nfMetadataBucket
+          pvtkey: "ethSystemKey"
+      Handler: index.handler
+      Runtime: nodejs14.x
+      CodeUri: lambdas/nftdetails/.
+      Description: GetMetaData 
+      Timeout: 10
+      Policies: 
+        - AWSLambdaBasicExecutionRole
+        - AWSLambda_ReadOnlyAccess
+        - AmazonManagedBlockchainFullAccess 
+        - AmazonSSMReadOnlyAccess
+        - S3ReadPolicy:
+            BucketName: !Ref nfMetadataBucket
+      Events:
+        postEndpoint:
+          Type: Api
+          Properties:
+            RestApiId: !Ref nftapi
+            Path: /assets/{metadata}
+            Method: GET
+            Auth: 
+              Authorizer: MyLambdaTokenAuth
+      Layers:
+        - !Ref onchainUtils
+
+  onchainUtils:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: onchain-utils
+      Description: blockchain utils
+      ContentUri: lambdas/shared/.
+      CompatibleRuntimes:
+        - nodejs14.x
+Outputs:
+  nftApi:
+    Value: !Ref nftapi
+
+  NetworkId:
+    Description: Network Id
+    Value: !GetAtt EthereumNode.NetworkId
+
+  NodeId:
+    Description: Node Id
+    Value: !GetAtt EthereumNode.NodeId

@@ -1,0 +1,11 @@
+Config
+
+*.swp
+*.DS_Store
+*.aws-sam
+.vscode/
+*node_modules/
+!serverless/lambdas/shared/nodejs/node_modules/
+
+.env
+serverless/test-events/env.json

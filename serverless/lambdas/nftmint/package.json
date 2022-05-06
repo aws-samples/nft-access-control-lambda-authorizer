@@ -1,0 +1,16 @@
+{
+  "name": "nft-amb-mint",
+  "version": "1.0.0",
+  "private": true,
+  "authors": [
+    "Matan Zutta",
+    "Forrest Colyer"
+  ],
+  "dependencies": {
+    "ethers": "^5.5.1",
+    "uuid": "^8.3.2",
+    "web3": "^1.3.5-rc.0",
+    "web3-providers-http": "^1.6.0",
+    "xhr2": "^0.2.1"
+  }
+}

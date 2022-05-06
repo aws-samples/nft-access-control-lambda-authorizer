@@ -1,0 +1,10 @@
+{
+"requestType": "deploy",
+"tokenName": "awsnft",
+"tokenTicker": "MZAN",
+"baseURI": "https://49drke25p0.execute-api.us-east-1.amazonaws.com/nftapi/assets/"
+}
+
+
+
+
