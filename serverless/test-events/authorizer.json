@@ -5,11 +5,11 @@
     "methodArn": "arn:aws:execute-api:us-east-1:123456789012:/prod/assets/{proxy+}"
   },
   "signed": {
-    "message":"{ \"resource\": \"nft\", \"tokenId\": 0, \"contractAddress\": \"0x857f283f12c44897f24d60c8b2d9586acbfaa06a\" }",
+    "message":"{ \"resource\": \"nft\", \"tokenId\": 0, \"contractAddress\": \"{{YOUR_DEPLOYED_CONTRACT_ADDRESS}}\" }",
     "signature":"0x1e194462de7be658a76cc2ac04c8abd93aa548fc438ebfb45f2449a43d0e9c2e4fcf0d6c783f2661aa1b90c65dce1fbffa7af54374f91b4825fe2aa6f229981d1b",
-    "address":"0x97784017897335b5e28B62Dfc04ED8fc6408A157"
+    "address":"{{EXAMPLE_ADDRESS}}"
   },
-  "raw": { "resource": "nft", "tokenId": 0, "contractAddress": "0x857f283f12c44897f24d60c8b2d9586acbfaa06a" }
+  "raw": { "resource": "nft", "tokenId": 0, "contractAddress": "{{YOUR_DEPLOYED_CONTRACT_ADDRESS}}" }
 }
 
 

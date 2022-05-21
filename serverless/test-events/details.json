@@ -1,4 +1,4 @@
 {"requestType": "details",
-"contractAddress": "0x49d4336D5b7BE699eCF7f06cC9E277D4D30E384c",
+"contractAddress": "{{YOUR_DEPLOYED_CONTRACT_ADDRESS}}",
 "tokenID": "0"
 }
