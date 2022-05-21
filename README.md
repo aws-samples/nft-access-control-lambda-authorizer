@@ -1,9 +1,7 @@
 
 ## Building NFT Metadata Access Control with Ethereum signatures and AWS Lambda Authorizers
 
-This repository contains sample code to deploy ERC-721 smart contracts on the Ethereum blockchain network using Amazon Managed Blockchain as a geth node. It provides a reference architecture for deploying a contract, minting NFT tokens and querying token owners using serverless components
-
-
+This repository contains sample code to authorize requests to NFT metadata based on Ethereum signing capabilities and the use of Lambda authorizers. It provides a reference architecture and uses AWS SAM to provision the relevant resources in order to deploy ERC-721 smart contract as well as mint, and sign messages to access the underline metadata. By using this solution we can ensure that only authorized users (e.g. NFT owner) can read the NFT contents.
 
 The repo is structured as follows:
 
