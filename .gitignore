@@ -9,3 +9,4 @@ Config
 
 .env
 serverless/test-events/env.json
+audit
