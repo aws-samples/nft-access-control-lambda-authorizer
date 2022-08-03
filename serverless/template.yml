@@ -24,16 +24,42 @@ Resources:
       NodeConfiguration:
         InstanceType: !Ref pInstanceType
         AvailabilityZone: !Ref pAvailabilityZone
-  nfMetadataBucket:
+
+  MetadataBucket:
    Type: AWS::S3::Bucket
    Properties:
       BucketName: !Join ['-', [!Ref AWS::AccountId,!Ref pNftBucketName]]
+      PublicAccessBlockConfiguration: 
+        RestrictPublicBuckets: TRUE
+      LoggingConfiguration:
+        # DestinationBucketName: !Ref LoggingBucket
+        LogFilePrefix: access-logs
+      BucketEncryption: 
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256   
+
+  ApiAccessLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: nftapi
+    Properties:
+      LogGroupName: !Sub /aws/apigateway/${nftapi}
+      RetentionInDays: 7
+
   nftapi:
     Type: AWS::Serverless::Api
+    DependsOn: ApiCWLRoleArn
     Properties:
       StageName: nftapi
       TracingEnabled: true
       OpenApiVersion: 3.0.2
+      AccessLogSetting:
+        DestinationArn: !Sub ${ApiAccessLogGroup.Arn} # This Log Group is already created within our SAM Template
+        Format: "{ 'requestId':'$context.requestId', 'ip': '$context.identity.sourceIp', 'caller':'$context.identity.caller', 'user':'$context.identity.user','requestTime':'$context.requestTime', 'xrayTraceId':'$context.xrayTraceId', 'wafResponseCode':'$context.wafResponseCode', 'httpMethod':'$context.httpMethod','resourcePath':'$context.resourcePath', 'status':'$context.status','protocol':'$context.protocol', 'responseLength':'$context.responseLength' }"
+      MethodSettings:
+        - MetricsEnabled: True
+          ResourcePath: '/*'
+          HttpMethod: '*'
       Cors:
         AllowMethods: "'POST, GET, OPTIONS'"
         AllowHeaders: "'X-Forwarded-For, Content-type, Authorization'"
@@ -46,6 +72,28 @@ Resources:
         Authorizers:  
           MyLambdaTokenAuth:
             FunctionArn: !GetAtt nftauth.Arn
+  
+  ApiCWLRoleArn:
+    Type: AWS::ApiGateway::Account
+    Properties: 
+      CloudWatchRoleArn: !GetAtt CloudWatchRole.Arn
+
+# IAM Role for API GW + CWL
+  CloudWatchRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            Action: 'sts:AssumeRole'
+            Effect: Allow
+            Principal:
+              Service: apigateway.amazonaws.com
+        Path: /
+        ManagedPolicyArns:
+          - 'arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs'
+
+
   nftmint:
     Type: AWS::Serverless::Function
     Properties:
@@ -53,7 +101,7 @@ Resources:
        Variables:
          nodeId: !GetAtt EthereumNode.NodeId
          networkId: !GetAtt EthereumNode.NetworkId
-         bucketName: !Ref nfMetadataBucket
+         bucketName: !Ref MetadataBucket
          pvtkey: "ethSystemKey"
       Handler: index.handler
       Runtime: nodejs14.x
@@ -67,7 +115,7 @@ Resources:
         - AmazonManagedBlockchainFullAccess 
         - AmazonSSMReadOnlyAccess
         - S3WritePolicy:
-            BucketName: !Ref nfMetadataBucket
+            BucketName: !Ref MetadataBucket
       Events:
         postEndpoint:
           Type: Api
@@ -85,7 +133,7 @@ Resources:
        Variables:
          nodeId: !GetAtt EthereumNode.NodeId
          networkId: !GetAtt EthereumNode.NetworkId
-         bucketName: !Ref nfMetadataBucket
+         bucketName: !Ref MetadataBucket
          pvtkey: "ethSystemKey"
       Handler: index.handler
       Runtime: nodejs14.x
@@ -114,7 +162,7 @@ Resources:
         Variables:
           nodeId: !GetAtt EthereumNode.NodeId
           networkId: !GetAtt EthereumNode.NetworkId
-          bucketName: !Ref nfMetadataBucket
+          bucketName: !Ref MetadataBucket
           pvtkey: "ethSystemKey"
       Handler: index.handler
       Runtime: nodejs14.x
@@ -137,7 +185,7 @@ Resources:
         Variables:
           nodeId: !GetAtt EthereumNode.NodeId
           networkId: !GetAtt EthereumNode.NetworkId
-          bucketName: !Ref nfMetadataBucket
+          bucketName: !Ref MetadataBucket
           pvtkey: "ethSystemKey"
       Handler: index.handler
       Runtime: nodejs14.x
@@ -150,7 +198,7 @@ Resources:
         - AmazonManagedBlockchainFullAccess 
         - AmazonSSMReadOnlyAccess
         - S3ReadPolicy:
-            BucketName: !Ref nfMetadataBucket
+            BucketName: !Ref MetadataBucket
       Events:
         postEndpoint:
           Type: Api
