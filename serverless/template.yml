@@ -39,6 +39,7 @@ Resources:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256   
 
+  
   ApiAccessLogGroup:
     Type: AWS::Logs::LogGroup
     DependsOn: nftapi
@@ -108,14 +109,7 @@ Resources:
       CodeUri: lambdas/nftmint/.
       Description: Call the AWS Lambda API for NFT
       Timeout: 10
-      # Function's execution role
-      Policies:
-        - AWSLambdaBasicExecutionRole
-        - AWSLambda_ReadOnlyAccess
-        - AmazonManagedBlockchainFullAccess 
-        - AmazonSSMReadOnlyAccess
-        - S3WritePolicy:
-            BucketName: !Ref MetadataBucket
+      Role: !GetAtt nftMintRole.Arn
       Events:
         postEndpoint:
           Type: Api
@@ -125,6 +119,36 @@ Resources:
             Method: POST
       Layers:
         - !Ref onchainUtils
+
+  nftMintRole:
+        Type: AWS::IAM::Role
+        Properties:
+          AssumeRolePolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              Action: 'sts:AssumeRole'
+              Effect: Allow
+              Principal:
+                Service: lambda.amazonaws.com
+          ManagedPolicyArns:
+            - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+            - arn:aws:iam::aws:policy/AWSLambda_ReadOnlyAccess
+            - arn:aws:iam::aws:policy/AmazonManagedBlockchainFullAccess
+            - arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess
+          Path: /
+          Policies:
+            - PolicyName: S3WritePolicy
+              PolicyDocument: 
+                Version: '2012-10-17'
+                Statement:
+                  Action: 
+                    - "s3:PutObject"
+                    - "s3:PutObjectAcl"
+                    - "s3:PutLifecycleConfiguration"
+                  Effect: Allow
+                  Resource:
+                    - !Join ['', ['arn:aws:s3:::',!Ref MetadataBucket, '/*']]
+                    - !Join ['', ['arn:aws:s3:::',!Ref MetadataBucket]]
   
   nftdeploy:
     Type: AWS::Serverless::Function
@@ -192,13 +216,14 @@ Resources:
       CodeUri: lambdas/nftdetails/.
       Description: GetMetaData 
       Timeout: 10
-      Policies: 
-        - AWSLambdaBasicExecutionRole
-        - AWSLambda_ReadOnlyAccess
-        - AmazonManagedBlockchainFullAccess 
-        - AmazonSSMReadOnlyAccess
-        - S3ReadPolicy:
-            BucketName: !Ref MetadataBucket
+      Role: !GetAtt nftDetailsRole.Arn
+      # Policies: 
+      #   - AWSLambdaBasicExecutionRole
+      #   - AWSLambda_ReadOnlyAccess
+      #   - AmazonManagedBlockchainFullAccess 
+      #   - AmazonSSMReadOnlyAccess
+      #   - S3ReadPolicy:
+      #       BucketName: !Ref MetadataBucket
       Events:
         postEndpoint:
           Type: Api
@@ -211,6 +236,39 @@ Resources:
       Layers:
         - !Ref onchainUtils
 
+
+  nftDetailsRole:
+        Type: AWS::IAM::Role
+        Properties:
+          AssumeRolePolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              Action: 'sts:AssumeRole'
+              Effect: Allow
+              Principal:
+                Service: lambda.amazonaws.com
+          ManagedPolicyArns:
+            - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+            - arn:aws:iam::aws:policy/AWSLambda_ReadOnlyAccess
+            - arn:aws:iam::aws:policy/AmazonManagedBlockchainFullAccess
+            - arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess
+          Path: /
+          Policies:
+            - PolicyName: S3ReadPolicy
+              PolicyDocument: 
+                Version: '2012-10-17'
+                Statement:
+                  Action: 
+                    - "s3:GetObject"
+                    - "s3:ListBucket"
+                    - "s3:GetBucketLocation"
+                    - "s3:GetObjectVersion"
+                    - "s3:GetLifecycleConfiguration"
+                  Effect: Allow
+                  Resource:
+                    - !Join ['', ['arn:aws:s3:::',!Ref MetadataBucket, '/*']]
+                    - !Join ['', ['arn:aws:s3:::',!Ref MetadataBucket]]
+
   onchainUtils:
     Type: AWS::Serverless::LayerVersion
     Properties:
@@ -219,6 +277,34 @@ Resources:
       ContentUri: lambdas/shared/.
       CompatibleRuntimes:
         - nodejs14.x
+  
+
+  MetadataBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties: 
+      Bucket: !Ref MetadataBucket
+      PolicyDocument: 
+        Version: '2012-10-17'
+        Statement:
+          - Action:
+              - 's3:GetObject'
+              - 's3:GetObjectVersion'
+            Effect: Allow
+            Resource: !Join ['', ['arn:aws:s3:::',!Ref MetadataBucket, '/*']]
+            Principal:
+              AWS: !GetAtt nftDetailsRole.Arn
+          - Action:
+              - 's3:PutObject'
+              - 's3:PutObjectAcl'
+            Effect: Allow
+            Resource: !Join ['', ['arn:aws:s3:::',!Ref MetadataBucket, '/*']]
+            Principal:
+              AWS: !GetAtt nftMintRole.Arn
+
+        
+              
+
+
 Outputs:
   nftApi:
     Value: !Ref nftapi
@@ -230,3 +316,6 @@ Outputs:
   NodeId:
     Description: Node Id
     Value: !GetAtt EthereumNode.NodeId
+
+  MatadataBucket:
+    Value: !Ref MetadataBucket
