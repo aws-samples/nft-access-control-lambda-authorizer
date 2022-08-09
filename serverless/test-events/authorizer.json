@@ -9,7 +9,7 @@
     "signature":"0x1e194462de7be658a76cc2ac04c8abd93aa548fc438ebfb45f2449a43d0e9c2e4fcf0d6c783f2661aa1b90c65dce1fbffa7af54374f91b4825fe2aa6f229981d1b",
     "address":"{{EXAMPLE_ADDRESS}}"
   },
-  "raw": { "resource": "nft", "tokenId": 0, "contractAddress": "{{YOUR_DEPLOYED_CONTRACT_ADDRESS}}" }
+  "raw": { "resource": "nft", "tokenId": 0, "contractAddress": "0x9C628519Ac2C83afbE1b37d8AFceCa967cdAFD7f" }
 }
 
 

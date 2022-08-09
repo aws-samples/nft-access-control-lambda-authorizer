@@ -2,7 +2,7 @@
 "requestType": "deploy",
 "tokenName": "awsnft",
 "tokenTicker": "MZAN",
-"baseURI": "{{NFT_API_ADDRESS}}/nftapi/assets/"
+"baseURI": " https://07bsom9i56.execute-api.us-east-1.amazonaws.com/nftapi/assets/"
 }
 
 

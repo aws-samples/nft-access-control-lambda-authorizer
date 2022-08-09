@@ -30,17 +30,13 @@ const mintNFT = async (contractAddress, mintAddress, metadataUrl, gasLimit = 100
 
     try {
       var options = { gasPrice, gasLimit };
-      // const [mintId, mintResult] = 
-        // await Promise.all([erc721.counter(options), erc721['safeMint(address,string)'](mintAddress, metadataUrl, options)])
         
       const mintResult  = await erc721['safeMint(address,string)'](mintAddress, metadataUrl, options)
-      // const tokenURI= await erc721.tokenURI(mintId, options)
         
       console.log("mint result", mintResult)
 
       return {
-        "txHash": mintResult.hash,
-        // "tokenId": mintId.toNumber(), "tokenURI": tokenURI
+        "txHash": mintResult.hash
       }
 
     } catch (error) {
