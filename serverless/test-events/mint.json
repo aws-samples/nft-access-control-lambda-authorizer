@@ -1,7 +1,7 @@
 {
   "requestType": "mint",
-  "contractAddress": "0x9C628519Ac2C83afbE1b37d8AFceCa967cdAFD7f",
-  "mintAddress": "0x97784017897335b5e28B62Dfc04ED8fc6408A157",
+  "contractAddress": "{{YOUR_DEPLOYED_CONTRACT_ADDRESS}}",
+  "mintAddress": "{{DESTINATION_WALLET_ADDRESSS}}",
   "gasLimit": 9000000,
   "gasPrice": 99999999999,
   "metadata": {
