@@ -10,7 +10,6 @@ try {
       throw "no requestContext";
     }
     const {contractAddress, tokenId, metadataId} = event.requestContext.authorizer
-    // const {metadata} = event.pathParameters;
     console.log(`token: ${tokenId}, contract: ${contractAddress}, metadata: ${metadataId}`)
 
     responseObject = await getDetails.getTokenMetadata(metadataId)
