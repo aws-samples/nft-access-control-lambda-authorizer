@@ -4,7 +4,7 @@
   "mintAddress": "{{DESTINATION_WALLET_ADDRESSS}}",
   "gasLimit": 9000000,
   "gasPrice": 99999999999,
-  "waitConfirmations": true,
+  "waitConfirmations": false,
   "metadata": {
     "description": "useful description", 
     "image": "https://d3i60wwbxl0tk7.cloudfront.net/download.jpeg", 
