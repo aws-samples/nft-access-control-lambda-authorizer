@@ -18,7 +18,7 @@ const putMetadata = async (id, contents, bucket = bucketName, folderPrefix = "me
 
 }
 
-const mintNFT = async (contractAddress, mintAddress, metadataUrl, gasLimit = 100000, gasPrice = 100000000000) => {
+const mintNFT = async (contractAddress, mintAddress, metadataUrl, gasLimit = 100000, gasPrice = 100000000000, waitForTx=true) => {
     const provider = await providers.getProvider()
     const myWallet = await wallets.getAWSWallet(provider)
 
@@ -34,12 +34,29 @@ const mintNFT = async (contractAddress, mintAddress, metadataUrl, gasLimit = 100
         
       console.log("mint result", mintResult)
 
+      if (waitForTx && Number(waitForTx) > 0) {
+        const mintReceipt = await mintResult.wait(Number(waitForTx))
+        console.log(`mint receipt: ${JSON.stringify(mintReceipt)}`)
+
+        if (mintReceipt.logs && mintReceipt.logs[0].topics.length == 4) { // relies on event emitted by the default contract
+          const tokenIdBigNumber = mintReceipt.logs[0].topics[3]
+          const tokenId = ethers.BigNumber.from(tokenIdBigNumber).toNumber()
+          return {
+            txHash: mintResult.hash,
+            tokenId: tokenId,
+            blockNumber: mintReceipt.blockNumber
+          }
+        }
+        
+      }
+
       return {
         "txHash": mintResult.hash
       }
 
     } catch (error) {
-      return {"Minting Error": error};
+      console.error(error)
+      return { "Minting Error": error};
     }
   }
 module.exports = { mintNFT, putMetadata }

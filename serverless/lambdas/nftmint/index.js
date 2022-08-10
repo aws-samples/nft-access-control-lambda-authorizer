@@ -7,13 +7,14 @@ exports.handler = async function(event, context) {
   try {
     console.log('EVENT', event.body);
     
-    let {contractAddress, mintAddress, gasLimit, gasPrice, metadata} = JSON.parse(event.body);
+    let {contractAddress, mintAddress, gasLimit, gasPrice, metadata, waitConfirmations} = JSON.parse(event.body);
     const metadataId = uuid.v4();
     
     await mintNFT.putMetadata(metadataId, metadata)
     
+    const waitForTx = waitConfirmations ?? process.env.waitConfirmations ?? false
     //call the mint NFT function
-    let responseObject = await mintNFT.mintNFT(contractAddress, mintAddress, metadataId, gasLimit, gasPrice)
+    let responseObject = await mintNFT.mintNFT(contractAddress, mintAddress, metadataId, gasLimit, gasPrice, waitForTx)
     responseObject = {id: metadataId, ...responseObject}
 
     return {

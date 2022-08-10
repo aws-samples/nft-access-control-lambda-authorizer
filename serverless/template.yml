@@ -104,11 +104,12 @@ Resources:
          networkId: !GetAtt EthereumNode.NetworkId
          bucketName: !Ref MetadataBucket
          pvtkey: "ethSystemKey"
+         waitConfirmations: "false" 
       Handler: index.handler
       Runtime: nodejs14.x
       CodeUri: lambdas/nftmint/.
       Description: Call the AWS Lambda API for NFT
-      Timeout: 10
+      Timeout: 30
       Role: !GetAtt nftMintRole.Arn
       Events:
         postEndpoint:
