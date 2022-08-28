@@ -21,7 +21,7 @@ For more details on how to use this repo please refer to the following [blog](ht
 
 ## Reference architecture
 
-![Architecture](./images/arch.jpg)
+![Architecture](./images/arch.jpeg)
 
 ### Pre-requisites
 
