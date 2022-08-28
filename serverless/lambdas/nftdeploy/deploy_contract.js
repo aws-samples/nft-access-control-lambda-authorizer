@@ -1,3 +1,6 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: MIT-0
+
 const ethers = require('ethers');
 const {providers, wallets, samples} = require('onchain-utils')
 
