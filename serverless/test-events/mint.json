@@ -6,8 +6,8 @@
   "gasPrice": 99999999999,
   "waitConfirmations": false,
   "metadata": {
-    "description": "useful description", 
-    "image": "https://d3i60wwbxl0tk7.cloudfront.net/download.jpeg", 
-    "name": " My cool nft"
+    "description": "useful NFT description", 
+    "image": "{{YOUR_NFT_IMAGE_URL}}}", 
+    "name": "My cool NFT"
   }
 }
