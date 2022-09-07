@@ -203,7 +203,7 @@ Resources:
       Layers:
         - !Ref onchainUtils
 
-  nftdetails: 
+  nftMetadata: 
     Type: AWS::Serverless::Function
     Properties:
       Environment:
@@ -214,10 +214,10 @@ Resources:
           pvtkey: "ethSystemKey"
       Handler: index.handler
       Runtime: nodejs14.x
-      CodeUri: lambdas/nftdetails/.
+      CodeUri: lambdas/nftMetadata/.
       Description: GetMetaData 
       Timeout: 10
-      Role: !GetAtt nftDetailsRole.Arn
+      Role: !GetAtt nftMetadataRole.Arn
       # Policies: 
       #   - AWSLambdaBasicExecutionRole
       #   - AWSLambda_ReadOnlyAccess
@@ -238,7 +238,7 @@ Resources:
         - !Ref onchainUtils
 
 
-  nftDetailsRole:
+  nftMetadataRole:
         Type: AWS::IAM::Role
         Properties:
           AssumeRolePolicyDocument:
@@ -293,7 +293,7 @@ Resources:
             Effect: Allow
             Resource: !Join ['', ['arn:aws:s3:::',!Ref MetadataBucket, '/*']]
             Principal:
-              AWS: !GetAtt nftDetailsRole.Arn
+              AWS: !GetAtt nftMetadataRole.Arn
           - Action:
               - 's3:PutObject'
               - 's3:PutObjectAcl'
