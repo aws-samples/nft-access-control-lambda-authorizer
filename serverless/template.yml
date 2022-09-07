@@ -151,6 +151,33 @@ Resources:
                     - !Join ['', ['arn:aws:s3:::',!Ref MetadataBucket, '/*']]
                     - !Join ['', ['arn:aws:s3:::',!Ref MetadataBucket]]
   
+  nftDetails:
+    Type: AWS::Serverless::Function
+    Properties:
+      Environment:
+       Variables:
+         nodeId: !GetAtt EthereumNode.NodeId
+         networkId: !GetAtt EthereumNode.NetworkId
+      Handler: index.handler
+      Runtime: nodejs14.x
+      CodeUri: lambdas/nftDetails/.
+      Description: Call the AWS Lambda API for NFT Details
+      Timeout: 30
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AWSLambda_ReadOnlyAccess
+        - AmazonManagedBlockchainFullAccess 
+        # - AmazonSSMReadOnlyAccess
+      Events:
+          getEndpoint:
+            Type: Api
+            Properties:
+              RestApiId: !Ref nftapi
+              Path: /details
+              Method: GET
+      Layers:
+        - !Ref onchainUtils
+
   nftdeploy:
     Type: AWS::Serverless::Function
     Properties:
