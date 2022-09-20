@@ -69,16 +69,16 @@ Add some Ethereum test tokens for the Rinkeby network by entering the Ethereum a
 
 ## Step 1: Deploy the NFT smart contract (ERC721)
 
-Once an Ethereum wallet has been created for the backend NFT minting service and funded with testnet Ether, the smart contract that will be used to mint and manage NFTs can be deployed to the Ethereum testnet. First, modify the JSON event deploy.json to define the NFT contract details such as the name, ticker symbol and base URI for the underlying NFT content. The base URI will refer to the endpoint where the metadata files will reside for each NFT minted via this smart contract. 
+After an Ethereum-compatible blockchain wallet has been created for the backend NFT minting service and funded with testnet Ether, we can deploy the ERC721 token standard smart contract that we use to mint and manage NFTs to the Ethereum testnet. The ERC721 smart contract standard defines methods and functionalities to create and manage NFTs on the blockchain. To deploy the smart contract, first modify the JSON event deploy.json to define the NFT contract details such as the name, ticker symbol, and base URI for the underlying NFT content. The base URI refers to the endpoint where the metadata files reside for each NFT minted via this smart contract. 
+Navigate to `Path: nft-access-control >> serverless >> test-events >> deploy.json` 
 
-`Path: nft-access-control >> serverless >> test-events >> deploy.json
-`
+See the following code:
 ```
 {
     "requestType": "deploy",
     "tokenName": "awsnft",
     "tokenTicker": "MZAN",
-    "baseURI": "https://49drke25p0.execute-api.us-east-1.amazonaws.com/nftapi/assets/"
+    "baseURI": "https://<api>.execute-api.<region>.amazonaws.com /nftapi/assets/"
 }
 ```
 
@@ -86,49 +86,55 @@ Once an Ethereum wallet has been created for the backend NFT minting service and
 curl -X POST https://<api>.execute-api.<region>.amazonaws.com/nftapi -H "Content-Type: application/json" -d @deploy.json
 ````
 
-Once the smart contract is deployed, you will receive a response containing the transaction hash (ID) and contract address that you will use in the next step to mint an NFT using that smart contract.
+After the smart contract is deployed, you receive a response containing the transaction hash (ID) and contract address that you use in the next step to mint an NFT using that smart contract.
+
 
 ## Step 2: Mint an NFT
 
-With the ERC721 smart contract deployed, the _safeMint function can be invoked on the smart contract to mint a new NFT with an incremented unsigned integer token ID. The first NFT created in this smart contract will have a token ID of 0, the second will have a token ID of 1, etc. 
+With the ERC721 smart contract deployed, we can invoke the _safeMint function on the smart contract to mint a new NFT with an incremented unsigned integer token ID. The first NFT created in this smart contract has a token ID of 0, the second has a token ID of 1, and so on. 
 
-To mint, modify the the mintAddress variable in the mint.json event file. The mintAddress is the Ethereum address that the token ownership is transferred to upon the creation of the NFT. In this case, copy the address from your MetaMask wallet and paste it in as the address to mint to. 
+To mint, modify the mintAddress variable in the mint.json event file. The mintAddress is the Ethereum address (not necessarily the same address as the one that deployed the contract) that the token ownership is transferred to upon the creation of the NFT. In this case, copy the address from your MetaMask wallet and enter it as the address to mint to. Navigate to `Path: nft-access-control >> serverless >> test-events >> mint.json`
 
-`Path: nft-access-control >> serverless >> test-events >> mint.json`
+See the following code:
+
 ```
 {  
     "requestType": "mint",  
-    "contractAddress": "0x857f283f12C44897f24d60c8b2d9586AcbFAA06A",  
-    "mintAddress": "{<your Ethereum address>}",  
+    "contractAddress": "<your deployed contract address>",  
+    "mintAddress": "<your Ethereum address>",  
     "gasLimit": 9000000,  
     "gasPrice": 99999999999,  
     "metadata": {    
-        "description": "useful descriptiom",     
-        "image": "https://d3i60wwbxl0tk7.cloudfront.net/download.jpeg",     
+        "description": "useful description",     
+        "image": "<your nft image url>",     
         "name": "The best nft"  
         }
 }
 
 ```
+
+```bash 
+curl -X POST https://<api>.execute-api.<region>.amazonaws.com/nftapi/mint -H "Content-Type: application/json" -d @mint.json
+````
+
 ![Metamask](./images/metamask.png)
 
-This minting function will mint a new NFT and assign its owner to the Ethereum address copied from your MetaMask wallet, as well as store the metadata attributes defined in mint.json within an S3 bucket for retrieval later. This metadata will only be accessible by the owner of the NFT, and requests to retrieve this metadata will be authenticated by verifying an Ethereum signature from your Ethereum wallet in MetaMask!
+This minting function mints a new NFT and assigns its owner to the Ethereum address copied from your MetaMask wallet, and stores the metadata attributes defined in mint.json within an S3 bucket for retrieval later. With the Lambda authorizer deployed earlier, this metadata is only accessible by the owner of the NFT. Any requests to retrieve this metadata are authenticated by verifying an Ethereum signature from your Ethereum-compatible blockchain wallet in MetaMask. The private key signature produced by your wallet proves your ownership of the address that owns the NFT corresponding to the requested metadata.
 
 ## Step 3: Get Metadata URI
 
-In order to retrieve the metadata for your new NFT, you must first retrieve the metadata URI that was set in earlier steps. This metadata URI will point to an API endpoint through which requests for token metadata stored in S3 will be handled. To request the metadata URI, modify the the tokenID variable in the details.json event file. The tokenID is the unsigned integer pertaining to the token you minted in the prior step. 
+To retrieve the metadata for your new NFT, you must first retrieve the metadata URI that was set in earlier steps. This metadata URI points to an API endpoint through which requests for token metadata stored in Amazon S3 are handled. To get the tokenId from the prior step, you can either find it on etherscan or change the mint configuration to wait for minting full confirmation response (not recommended for production). Once you have the minted tokenId, use it with the following code to request the metadata URI:
 
-`Path: nft-access-control >> serverless >> test-events >> details.json`
+```bash
+curl “https://<api>.execute-api.<region>.amazonaws.com/nftapi/details?contract=<your deployed contract address>&tokenId=<your minted tokenId>”
+````
 
-```
-{
-    "requestType": "details",
-    "contractAddress": "0x49d4336D5b7BE699eCF7f06cC9E277D4D30E384c",
-    "tokenID": "0"
-}
 
-```
-Copy the response, which contains the metadata URI API endpoint concatenated with the token ID provided in the request and save it in a notepad for later. 
+Copy the response, which contains the metadata URI API endpoint concatenated with the token ID provided in the request, and save it in a notepad for later.
+
+Note that in Solidity, the view methods to retrieve NFT balances and URIs can be called with the altered `msg.sender` property to retrieve URIs, balances, and so on. The `msg.sender` property sets the origin address for a given smart contract call or transaction. 
+
+
 
 ## Step 4: Sign message
 
@@ -159,7 +165,15 @@ sam delete nft-stack
 
 ## Security
 
-See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
+Although the implementation outlined in this post is designed to be easily deployable by the reader, there are additional security considerations to be aware of in your own deployment, including but not limited to: 
+
+* Consider deploying your Lambda functions inside a VPC construct to define clear network boundaries and ease the process of auditing connectivity and access
+* Take special care in managing private keys, including Ethereum wallet private keys, and use a secrets manager or key management mechanism at all times for key storage and signing
+* Consider adding a dynamic challenge to the authorization phase as part of the signing request step to avoid replay attacks
+* During the deployment process, run yarn audit and npm audit commands to be aware of any possible vulnerabilities present in application dependencies
+
+See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for additional information.
+
 
 ## License
 
