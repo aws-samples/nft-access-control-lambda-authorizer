@@ -17,7 +17,7 @@ The repo is structured as follows:
 └── truffle
 ```
 
-For more details on how to use this repo please refer to the following [blog](https://amazon.awsapps.com/workdocs/index.html#/document/6dfc57bff85948bac658c802d079d26f627ada75b3dec9db667cfc3d46c203fc).
+<!-- For more details on how to use this repo please refer to the following [blog](https://....). -->
 
 ## Reference architecture
 
