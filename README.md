@@ -17,7 +17,7 @@ The repo is structured as follows:
 └── truffle
 ```
 
-<!-- For more details on how to use this repo please refer to the following [blog](https://....). -->
+For more details on how to use this repo please refer to the following [blog](https://aws.amazon.com/blogs/database/build-nft-metadata-access-control-with-ethereum-signatures-and-aws-lambda-authorizers).
 
 ## Reference architecture
 
