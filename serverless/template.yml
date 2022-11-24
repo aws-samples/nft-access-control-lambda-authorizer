@@ -305,6 +305,8 @@ Resources:
       ContentUri: lambdas/shared/.
       CompatibleRuntimes:
         - nodejs14.x
+    Metadata:
+      BuildMethod : nodejs14.x
   
 
   MetadataBucketPolicy:

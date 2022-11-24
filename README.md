@@ -83,7 +83,7 @@ See the following code:
 ```
 
 ```bash
-curl -X POST https://<api>.execute-api.<region>.amazonaws.com/nftapi -H "Content-Type: application/json" -d @deploy.json
+curl -X POST https://<api>.execute-api.<region>.amazonaws.com/nftapi/deploy -H "Content-Type: application/json" -d @deploy.json
 ````
 
 After the smart contract is deployed, you receive a response containing the transaction hash (ID) and contract address that you use in the next step to mint an NFT using that smart contract.
